@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{744a3e19-6de4-493c-9d2e-9a04c617a73d}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>CIHomework1.py</StartupFile>
+    <StartupFile>CIHomework2.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -22,6 +22,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CIHomework1.py" />
+    <Compile Include="CIHomework2_2.py" />
     <Compile Include="CIHomework2.py" />
     <Compile Include="TestCIHomework2.py" />
   </ItemGroup>
