@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ComputationalInvestment", "ComputationalInvestment\ComputationalInvestment.pyproj", "{744A3E19-6DE4-493C-9D2E-9A04C617A73D}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "QSTKExamples", "Examples\QSTKExamples.pyproj", "{FCCECE6B-9BA0-499A-B232-FCA4846F60D7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{744A3E19-6DE4-493C-9D2E-9A04C617A73D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{744A3E19-6DE4-493C-9D2E-9A04C617A73D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCCECE6B-9BA0-499A-B232-FCA4846F60D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCCECE6B-9BA0-499A-B232-FCA4846F60D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
