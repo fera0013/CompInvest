@@ -24,7 +24,13 @@
     <Compile Include="CIHomework1.py" />
     <Compile Include="CIHomework2_2.py" />
     <Compile Include="CIHomework2.py" />
+    <Compile Include="CIHomework3.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="TestCIHomework2.py" />
+    <Compile Include="TestCIHomework3.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="{2af0f10d-7135-4994-9156-5d01c9c11b7e}\2.7" />
