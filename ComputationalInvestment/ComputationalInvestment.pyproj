@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{744a3e19-6de4-493c-9d2e-9a04c617a73d}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>CIHomework2.py</StartupFile>
+    <StartupFile>CIHomework3.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
