@@ -21,6 +21,7 @@ import datetime as dt
 import QSTK.qstkutil.DataAccess as da
 import QSTK.qstkutil.tsutil as tsu
 import QSTK.qstkstudy.EventProfiler as ep
+import csv
 
 """
 Accepts a list of symbols along with start and end date
@@ -69,7 +70,12 @@ def find_events(ls_symbols, d_data,eventThreshold):
 def DropBelowFiveEventHasOccured(symbol,dayBeforeValue,todayValue):
      return dayBeforeValue>= 5 and   todayValue < 5
 
-def GenerateEventBasedTradingOrders(ls_symbols, startDate, endData, eventHasOccured,numberOfSharesToBuy,numberOfDaysToHold):
+def GenerateEventBasedTradingOrders(ls_symbols,
+                                    startDate,
+                                    endData,
+                                    numberOfSharesToBuy,
+                                    numberOfDaysToHold,
+                                    orderFile):
     ldt_timestamps = du.getNYSEdays(startDate, endData, dt.timedelta(hours=16))
     print "Load S&P 2012"
     dataobj = da.DataAccess('Yahoo')
@@ -96,29 +102,27 @@ def GenerateEventBasedTradingOrders(ls_symbols, startDate, endData, eventHasOccu
 
     # Time stamps for the event range
     ldt_timestamps = df_close.index
-
-    for s_sym in ls_symbols:
-        for i in range(1, len(ldt_timestamps)):
+    with open(orderFile, 'wb') as csvfile:
+       orderWriter = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+       for s_sym in ls_symbols:
+           for i in range(1, len(ldt_timestamps)):
             # Calculating the returns for this timestamp
             f_symprice_today = df_close[s_sym].ix[ldt_timestamps[i]]
             f_symprice_yest = df_close[s_sym].ix[ldt_timestamps[i - 1]]
-         
-            # Event is found if the symbol is down more then 3% while the
-            # market is up more then 2%
-            eventHasOccured
-            if eventHasOccured(s_sym, f_symprice_yest,f_symprice_today):
-               df_events[s_sym].ix[ldt_timestamps[i]] = 1
-
-
-if __name__ == '__main__':
-    dt_start = dt.datetime(2008, 1, 1)
-    dt_end = dt.datetime(2009, 12, 31)
- 
-
-    df_events = find_events(ls_symbols, d_data,10)
-    print "Creating Study for Drop-Below-10-Event S&P 2012"
-    ep.eventprofiler(df_events, d_data, i_lookback=20, i_lookforward=20,
-                s_filename='DropBelow10Event2012.pdf', b_market_neutral=True, b_errorbars=True,
-                s_market_sym='SPY')
+            if (i+numberOfDaysToHold)<len(ldt_timestamps):
+                if f_symprice_yest>= 5 and  f_symprice_today < 5:
+                    orderWriter.writerow([ldt_timestamps[i].year,
+                                          ldt_timestamps[i].month,
+                                          ldt_timestamps[i].day,
+                                          s_sym,
+                                          'Buy',
+                                          numberOfSharesToBuy])
+                    orderWriter.writerow([ldt_timestamps[i+numberOfDaysToHold].year,
+                                          ldt_timestamps[i+numberOfDaysToHold].month,
+                                          ldt_timestamps[i+numberOfDaysToHold].day,
+                                          s_sym, 
+                                          'Sell', 
+                                          numberOfSharesToBuy])
+                
 
  
