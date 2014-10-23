@@ -5,7 +5,7 @@ import QSTK.qstkutil.DataAccess as da
 import datetime as dt
 import csv
 
-def SimulateMarket(initialInvestment,ordersFile):
+def SimulateMarket(initialInvestment,ordersFile, dt_start=0,dt_end=0):
     #step1
     reader=csv.reader(open(ordersFile,'rU'),delimiter=';')
     dates=[]
@@ -16,8 +16,8 @@ def SimulateMarket(initialInvestment,ordersFile):
         symbols.append( orderInfo[3])
     symbolList = list(set( symbols))
     #step2
-    dt_start = dates[0]
-    dt_end = dates[-1]+dt.timedelta(days=1)
+    dt_start = dates[0] if dt_start==0 else dt_start
+    dt_end = dates[-1]+dt.timedelta(days=1) if dt_end==0 else dt_end
     dt_timeofday = dt.timedelta(hours=16)
     ldt_timestamps = du.getNYSEdays(dt_start, dt_end, dt_timeofday)
     c_dataobj = da.DataAccess('Yahoo')
@@ -36,8 +36,8 @@ def SimulateMarket(initialInvestment,ordersFile):
                 if  orderInfo[4]=='Buy':
                     amount = int(orderInfo[5])
                 else:
-                    amount = -int(orderInfo[5])
-                numberTraded[orderInfo[3]] = amount
+                    amount =-int(orderInfo[5])
+                numberTraded[orderInfo[3]] += amount
     #step4 
     cash = pandas.Series(0, index=ldt_timestamps)
     cash[ldt_timestamps[0]]=initialInvestment

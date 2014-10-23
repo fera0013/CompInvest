@@ -67,12 +67,11 @@ def find_events(ls_symbols, d_data,eventThreshold):
 
     return df_events
 
-def DropBelowFiveEventHasOccured(symbol,dayBeforeValue,todayValue):
-     return dayBeforeValue>= 5 and   todayValue < 5
 
 def GenerateEventBasedTradingOrders(ls_symbols,
                                     startDate,
                                     endData,
+                                    eventThreshold,
                                     numberOfSharesToBuy,
                                     numberOfDaysToHold,
                                     orderFile):
@@ -82,7 +81,7 @@ def GenerateEventBasedTradingOrders(ls_symbols,
     ls_symbols = dataobj.get_symbols_from_list(ls_symbols)
     ls_symbols.append('SPY')
 
-    ls_keys = ['open', 'high', 'low', 'close', 'volume', 'actual_close']
+    ls_keys = ['actual_close']
     ldf_data = dataobj.get_data(ldt_timestamps, ls_symbols, ls_keys)
     d_data = dict(zip(ls_keys, ldf_data))
 
@@ -109,20 +108,20 @@ def GenerateEventBasedTradingOrders(ls_symbols,
             # Calculating the returns for this timestamp
             f_symprice_today = df_close[s_sym].ix[ldt_timestamps[i]]
             f_symprice_yest = df_close[s_sym].ix[ldt_timestamps[i - 1]]
-            if (i+numberOfDaysToHold)<len(ldt_timestamps):
-                if f_symprice_yest>= 5 and  f_symprice_today < 5:
-                    orderWriter.writerow([ldt_timestamps[i].year,
-                                          ldt_timestamps[i].month,
-                                          ldt_timestamps[i].day,
-                                          s_sym,
-                                          'Buy',
-                                          numberOfSharesToBuy])
-                    orderWriter.writerow([ldt_timestamps[i+numberOfDaysToHold].year,
-                                          ldt_timestamps[i+numberOfDaysToHold].month,
-                                          ldt_timestamps[i+numberOfDaysToHold].day,
-                                          s_sym, 
-                                          'Sell', 
-                                          numberOfSharesToBuy])
+            holdUntil=(i+numberOfDaysToHold) if (i+numberOfDaysToHold)<len(ldt_timestamps) else len(ldt_timestamps)-1
+            if f_symprice_yest>= eventThreshold and  f_symprice_today< eventThreshold:
+                orderWriter.writerow([ldt_timestamps[i].year,
+                                        ldt_timestamps[i].month,
+                                        ldt_timestamps[i].day,
+                                        s_sym,
+                                        'Buy',
+                                        numberOfSharesToBuy])
+                orderWriter.writerow([ldt_timestamps[holdUntil].year,
+                                        ldt_timestamps[holdUntil].month,
+                                        ldt_timestamps[holdUntil].day,
+                                        s_sym, 
+                                        'Sell', 
+                                        numberOfSharesToBuy])
                 
 
  
