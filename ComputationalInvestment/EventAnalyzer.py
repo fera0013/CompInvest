@@ -66,15 +66,14 @@ def find_events(ls_symbols, d_data,eventThreshold):
 
     return df_events
 
+def DropBelowFiveEventHasOccured(symbol,dayBeforeValue,todayValue):
+     return dayBeforeValue>= 5 and   todayValue < 5
 
-if __name__ == '__main__':
-    dt_start = dt.datetime(2008, 1, 1)
-    dt_end = dt.datetime(2009, 12, 31)
-    ldt_timestamps = du.getNYSEdays(dt_start, dt_end, dt.timedelta(hours=16))
-
+def GenerateEventBasedTradingOrders(ls_symbols, startDate, endData, eventHasOccured,numberOfSharesToBuy,numberOfDaysToHold):
+    ldt_timestamps = du.getNYSEdays(startDate, endData, dt.timedelta(hours=16))
     print "Load S&P 2012"
     dataobj = da.DataAccess('Yahoo')
-    ls_symbols = dataobj.get_symbols_from_list('sp5002012')
+    ls_symbols = dataobj.get_symbols_from_list(ls_symbols)
     ls_symbols.append('SPY')
 
     ls_keys = ['open', 'high', 'low', 'close', 'volume', 'actual_close']
@@ -85,6 +84,36 @@ if __name__ == '__main__':
         d_data[s_key] = d_data[s_key].fillna(method='ffill')
         d_data[s_key] = d_data[s_key].fillna(method='bfill')
         d_data[s_key] = d_data[s_key].fillna(1.0)
+
+    df_close = d_data['actual_close']
+    ts_market = df_close['SPY']
+
+    print "Finding Events"
+
+    # Creating an empty dataframe
+    df_events = copy.deepcopy(df_close)
+    df_events = df_events * np.NAN
+
+    # Time stamps for the event range
+    ldt_timestamps = df_close.index
+
+    for s_sym in ls_symbols:
+        for i in range(1, len(ldt_timestamps)):
+            # Calculating the returns for this timestamp
+            f_symprice_today = df_close[s_sym].ix[ldt_timestamps[i]]
+            f_symprice_yest = df_close[s_sym].ix[ldt_timestamps[i - 1]]
+         
+            # Event is found if the symbol is down more then 3% while the
+            # market is up more then 2%
+            eventHasOccured
+            if eventHasOccured(s_sym, f_symprice_yest,f_symprice_today):
+               df_events[s_sym].ix[ldt_timestamps[i]] = 1
+
+
+if __name__ == '__main__':
+    dt_start = dt.datetime(2008, 1, 1)
+    dt_end = dt.datetime(2009, 12, 31)
+ 
 
     df_events = find_events(ls_symbols, d_data,10)
     print "Creating Study for Drop-Below-10-Event S&P 2012"
