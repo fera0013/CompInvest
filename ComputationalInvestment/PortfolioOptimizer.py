@@ -34,6 +34,25 @@ def readData(startDate, endDate, ls_symbols):
 
     return [d_data, startDate, endDate, dt_timeofday, ldt_timestamps];
 
+def calculatePortfolioStatistics(portfolioValues):
+    
+    # Normalizing the prices to start at 1 and see relative returns
+    na_normalized_price =portfolioValues / portfolioValues[0]
+
+    # Copy the normalized prices to a new ndarry to find returns.
+    na_rets = na_normalized_price.copy()
+
+    # Calculate the daily returns of the prices. (Inplace calculation)
+    tsu.returnize0(na_rets)
+    f_portf_volatility = np.std(na_rets); 
+
+    #Calculate average daily returns of portfolio
+    f_portf_avgret = np.mean(na_rets);
+
+    #Calculate portfolio sharpe ratio (avg portfolio return / portfolio stdev) * sqrt(252)
+    f_portf_sharpe = (f_portf_avgret / f_portf_volatility) * np.sqrt(250);
+    return [f_portf_volatility,f_portf_avgret,f_portf_sharpe]
+
 
 def calcStats(na_normalized_price, lf_allocations):
     #Calculate cumulative daily portfolio value
