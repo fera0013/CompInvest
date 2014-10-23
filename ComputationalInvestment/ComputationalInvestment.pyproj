@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{744a3e19-6de4-493c-9d2e-9a04c617a73d}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>CIHomework3.py</StartupFile>
+    <StartupFile>MarketSimulator.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -21,10 +21,9 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CIHomework1.py" />
-    <Compile Include="CIHomework2_2.py" />
-    <Compile Include="CIHomework2.py" />
-    <Compile Include="CIHomework3.py">
+    <Compile Include="PortfolioOptimizer.py" />
+    <Compile Include="EventAnalyzer.py" />
+    <Compile Include="MarketSimulator.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TestCIHomework2.py" />
