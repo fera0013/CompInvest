@@ -29,7 +29,7 @@
     <Compile Include="TestCIHomework3.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TestEventBasedOrderGeneration.py">
+    <Compile Include="TestEventAnalysis.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

@@ -39,8 +39,8 @@ nan = no information about any event.
 1 = status bit(positively confirms the event occurence)
 """
 
-
-def find_events(ls_symbols, d_data,eventThreshold):
+da
+def CreateEventMatrix(ls_symbols, start,eventThreshold):
     ''' Finding the event dataframe '''
     df_close = d_data['actual_close']
     ts_market = df_close['SPY']

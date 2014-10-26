@@ -4,7 +4,7 @@ import datetime as dt
 import MarketSimulator
 import PortfolioOptimizer
 
-class Test_AutomaticOrderGeneration(unittest.TestCase):
+class Test_EventAnalysis(unittest.TestCase):
     def test_EventBasedOrderGeneration(self):
         finalPortfolioValue = 54824
         startDate = dt.datetime(2008, 1, 1)
