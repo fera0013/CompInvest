@@ -13,7 +13,7 @@ import time
 from scipy.optimize import minimize
 
 
-def readData(startDate, endDate, ls_symbols):
+def ReadData(startDate, endDate, ls_symbols):
     #Create datetime objects for Start and End dates (STL)
 
     #Initialize daily timestamp: closing prices, so timestamp should be hours=16 (STL)
@@ -104,7 +104,7 @@ def simulate(li_startDate, li_endDate, ls_symbols, lf_allocations, b_print):
         return;
 
     #Prepare data for statistics
-    d_data = readData(li_startDate, li_endDate, ls_symbols)[0];
+    d_data = ReadData(li_startDate, li_endDate, ls_symbols)[0];
 
     #Get numpy ndarray of close prices (numPy)
     na_price = d_data['close'].values;
@@ -137,7 +137,7 @@ def optimize(li_startDate, li_endDate, ls_symbols, b_precision):
     start = time.time();
 
     #Prepare data for statistics
-    ld_alldata = readData(li_startDate, li_endDate, ls_symbols);
+    ld_alldata = ReadData(li_startDate, li_endDate, ls_symbols);
     d_data = ld_alldata[0];
 
     #Get numpy ndarray of close prices (numPy)
@@ -216,7 +216,7 @@ def optimize(li_startDate, li_endDate, ls_symbols, b_precision):
 
         #Plot portfolio daily values over time period
         #Obtain benchmark $SPX data
-        d_spx = readData(li_startDate, li_endDate, ["$SPX"])[0];
+        d_spx = ReadData(li_startDate, li_endDate, ["$SPX"])[0];
         na_spxprice = d_spx['close'].values;
         na_spxnormalized_price = na_spxprice / na_spxprice[0,:];
         lf_spxStats = calcStats(na_spxnormalized_price, [1]);
