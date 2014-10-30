@@ -26,6 +26,12 @@
     <Compile Include="MarketSimulator.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TechnicalIndicators.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TestBollingerBands.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="TestCIHomework3.py">
       <SubType>Code</SubType>
     </Compile>
