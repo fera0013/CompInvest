@@ -38,9 +38,7 @@ Also, d1 = start date
 nan = no information about any event.
 1 = status bit(positively confirms the event occurence)
 """
-
-da
-def CreateEventMatrix(ls_symbols, start,eventThreshold):
+def CreateEventMatrix(ls_symbols, d_data,eventThreshold):
     ''' Finding the event dataframe '''
     df_close = d_data['actual_close']
     ts_market = df_close['SPY']
@@ -49,11 +47,11 @@ def CreateEventMatrix(ls_symbols, start,eventThreshold):
 
     # Creating an empty dataframe
     df_events = copy.deepcopy(df_close)
-    df_events = df_events * np.NAN
+    df_events = df_events * 0
 
     # Time stamps for the event range
     ldt_timestamps = df_close.index
-
+    numberOfEvents=0
     for s_sym in ls_symbols:
         for i in range(1, len(ldt_timestamps)):
             # Calculating the returns for this timestamp
@@ -64,8 +62,9 @@ def CreateEventMatrix(ls_symbols, start,eventThreshold):
             # market is up more then 2%
             if  f_symprice_yest>= eventThreshold and   f_symprice_today < eventThreshold:
                 df_events[s_sym].ix[ldt_timestamps[i]] = 1
+                numberOfEvents+=1
 
-    return df_events
+    return [numberOfEvents,df_events]
 
 
 def GenerateEventBasedTradingOrders(ls_symbols,
