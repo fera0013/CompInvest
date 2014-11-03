@@ -22,6 +22,7 @@ import QSTK.qstkutil.DataAccess as da
 import QSTK.qstkutil.tsutil as tsu
 import QSTK.qstkstudy.EventProfiler as ep
 import csv
+import TechnicalIndicators
 
 """
 Accepts a list of symbols along with start and end date
@@ -65,6 +66,20 @@ def CreateEventMatrix(ls_symbols, d_data,eventThreshold):
                 numberOfEvents+=1
 
     return [numberOfEvents,df_events]
+
+def FindBollingerEvents(ls_symbols,startDate,endDate,loopBackPeriod=20): 
+    bollingerValuesOfSymbols = TechnicalIndicators.CalculateBollingerBands(ls_symbols,startDate,endDate,loopBackPeriod)
+    df_events = copy.deepcopy(bollingerValuesOfSymbols)
+    df_events = df_events * np.nan
+    bollingerValuesOfSpy = TechnicalIndicators.CalculateBollingerBands(["SPY"],startDate,endDate,loopBackPeriod)
+    numberOfEvents=0
+    for symbol in ls_symbols:
+        bollingerValues = bollingerValuesOfSymbols[symbol]
+        for i in range(1, len( bollingerValues)): 
+            if  bollingerValues.iloc[i]<=-2.0 and bollingerValues.iloc[i-1] >=-2.0 and  bollingerValuesOfSpy['SPY'].iloc[i]>=1.0:
+                df_events[symbol].ix[bollingerValues.index[i]] = 1
+                numberOfEvents+=1
+    return [numberOfEvents, df_events]
 
 
 def GenerateEventBasedTradingOrders(ls_symbols,

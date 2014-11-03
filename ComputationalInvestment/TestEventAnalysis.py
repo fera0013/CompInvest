@@ -8,7 +8,7 @@ import QSTK.qstkutil.DataAccess as da
 import QSTK.qstkstudy.EventProfiler as ep
 
 class Test_EventAnalysis(unittest.TestCase):
-    def testEventMatrixCreation(self):
+    def test_EventMatrixCreation(self):
         #Reference data fromhttp://wiki.quantsoftware.org/index.php?title=CompInvestI_Homework_2
         expectedNumberOfEvents=180
         dt_start = dt.datetime(2008, 1, 1)
@@ -26,6 +26,28 @@ class Test_EventAnalysis(unittest.TestCase):
             d_data[s_key] = d_data[s_key].fillna(1.0)
         [numberOfEvents,df_events] = EventAnalyzer.CreateEventMatrix(ls_symbols, d_data,5)
         self.assertEqual(expectedNumberOfEvents, numberOfEvents)
+
+    def test_BollingerEventMatrixCreation(self):
+        #Reference data fromhttp://wiki.quantsoftware.org/index.php?title=CompInvestI_Homework_2
+        expectedNumberOfEvents=278
+        dt_start = dt.datetime(2008, 1, 1)
+        dt_end = dt.datetime(2009, 12, 31)
+        ldt_timestamps = du.getNYSEdays(dt_start, dt_end, dt.timedelta(hours=16))
+        dataobj = da.DataAccess('Yahoo')
+        ls_symbols = dataobj.get_symbols_from_list('sp5002012')
+        ls_symbols.append('SPY')
+        ls_keys = ['open', 'high', 'low', 'close', 'volume', 'actual_close']
+        ldf_data = dataobj.get_data(ldt_timestamps, ls_symbols, ls_keys)
+        d_data = dict(zip(ls_keys, ldf_data))
+        for s_key in ls_keys:
+            d_data[s_key] = d_data[s_key].fillna(method='ffill')
+            d_data[s_key] = d_data[s_key].fillna(method='bfill')
+            d_data[s_key] = d_data[s_key].fillna(1.0)
+        [numberOfEvents,df_events] = EventAnalyzer.FindBollingerEvents(  ls_symbols,  dt_start,dt_end,loopBackPeriod=20)
+        ep.eventprofiler(df_events, d_data, i_lookback=20, i_lookforward=20,
+            s_filename='BollingerEventStudy.pdf', b_market_neutral=True, b_errorbars=True,
+            s_market_sym='SPY')
+        self.assertGreater(numberOfEvents,expectedNumberOfEvents)
 
     def test_EventBasedOrderGeneration(self):
         finalPortfolioValue = 54824
