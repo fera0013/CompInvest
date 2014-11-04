@@ -99,5 +99,35 @@ class Test_EventAnalysis(unittest.TestCase):
         totalReturn=portfolioValues.tail(1).ix[0]/initialInvestment
         self.assertGreater(totalReturn,  expectedLowerReturnBoundary)
         self.assertLess(totalReturn,  expectedUpperReturnBoundary)
+
+    def test_BollingerEventBasedOrders(self):
+        startDate = dt.datetime(2008, 1, 1)
+        endDate = dt.datetime(2009, 12, 31)
+        orderFile= 'BollingerEventBasedOrders.csv'
+        expectedLowerReturnBoundary=1.2
+        expectedUpperReturnBoundary=1.3
+        initialInvestment=100
+        expectedSharpeRatioOfFund = 0.878184607953
+        expectedSharpeRatioOfSPX = -0.119678949254
+        expectedTotalReturnOfFund= 1.09201 
+        expectedTotalReturnOfSPX = 0.821125528503
+        expectedStandardDeviationOfFund =  0.00351096966115
+        expectedStandardDeviationOfSPX = 0.0224380004349
+        averageDaiReturnOfFund =  0.000194228352864
+        averageDailyReturnOfSPX = -0.000169161547432
+        dataobj = da.DataAccess('Yahoo')
+        ls_symbols = dataobj.get_symbols_from_list('sp5002012')
+        #ls_symbols.append('SPY')
+        EventAnalyzer.GenerateBollingerEventsBasedOrders(ls_symbols, 
+                                        startDate, 
+                                        endDate,
+                                        20,
+                                        100,
+                                        5,
+                                        orderFile)
+        portfolioValues = MarketSimulator.SimulateMarket(100,  orderFile,startDate,endDate)
+        portfolioStatistics = PortfolioOptimizer.calculatePortfolioStatistics(portfolioValues.tolist())
+        sharpeRatio=portfolioStatistics[2]
+        self.assertEqual(expectedSharpeRatioOfFund,  sharpeRatio)
 if __name__ == '__main__':
     unittest.main()

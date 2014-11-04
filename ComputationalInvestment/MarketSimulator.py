@@ -4,6 +4,7 @@ import QSTK.qstkutil.tsutil as tsu
 import QSTK.qstkutil.DataAccess as da
 import datetime as dt
 import csv
+import numpy as np
 
 def SimulateMarket(initialInvestment,ordersFile, dt_start=0,dt_end=0):
     #step1
@@ -24,6 +25,10 @@ def SimulateMarket(initialInvestment,ordersFile, dt_start=0,dt_end=0):
     ls_keys = ['close']
     ldf_data = c_dataobj.get_data(ldt_timestamps, symbolList, ls_keys)
     d_data = dict(zip(ls_keys, ldf_data))
+    for s_key in ls_keys:
+        d_data[s_key] = d_data[s_key].fillna(method='ffill')
+        d_data[s_key] = d_data[s_key].fillna(method='bfill')
+        d_data[s_key] = d_data[s_key].fillna(1.0)
     #Step3
     tradeMatrix = pandas.DataFrame(index=ldt_timestamps,columns=symbolList).fillna(0)
     reader=csv.reader(open(ordersFile,'rU'),delimiter=';')

@@ -81,6 +81,53 @@ def FindBollingerEvents(ls_symbols,startDate,endDate,loopBackPeriod=20):
                 numberOfEvents+=1
     return [numberOfEvents, df_events]
 
+def GenerateBollingerEventsBasedOrders(ls_symbols,
+                                    startDate,
+                                    endDate,
+                                    loopBackPeriod,
+                                    numberOfSharesToBuy,
+                                    numberOfDaysToHold,
+                                    orderFile): 
+    ldt_timestamps = du.getNYSEdays(startDate, endDate, dt.timedelta(hours=16))
+    dataobj = da.DataAccess('Yahoo')
+    ls_keys = ['actual_close']
+    ldf_data = dataobj.get_data(ldt_timestamps, ls_symbols, ls_keys)
+    d_data = dict(zip(ls_keys, ldf_data))
+
+    for s_key in ls_keys:
+        d_data[s_key] = d_data[s_key].fillna(method='ffill')
+        d_data[s_key] = d_data[s_key].fillna(method='bfill')
+        d_data[s_key] = d_data[s_key].fillna(1.0)
+
+    df_close = d_data['actual_close']
+    ts_market = df_close['SPY']
+
+    print "Finding Events"
+    bollingerValuesOfSymbols = TechnicalIndicators.CalculateBollingerBands(ls_symbols,startDate,endDate,loopBackPeriod)
+    df_events = copy.deepcopy(bollingerValuesOfSymbols)
+    df_events = df_events * np.nan
+    bollingerValuesOfSpy = TechnicalIndicators.CalculateBollingerBands(["SPY"],startDate,endDate,loopBackPeriod)
+    numberOfEvents=0
+    with open(orderFile, 'wb') as csvfile:
+        orderWriter = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        for symbol in ls_symbols:
+            bollingerValues = bollingerValuesOfSymbols[symbol]
+            for i in range(1, len( bollingerValues)): 
+                if  bollingerValues.iloc[i]<=-2.0 and bollingerValues.iloc[i-1] >=-2.0 and  bollingerValuesOfSpy['SPY'].iloc[i]>=1.0:
+                    holdUntil=(i+numberOfDaysToHold) if (i+numberOfDaysToHold)<len( bollingerValues) else len( bollingerValues)-1
+                    orderWriter.writerow([bollingerValues.index[i].year,
+                                            bollingerValues.index[i].month,
+                                            bollingerValues.index[i].day,
+                                            symbol,
+                                            'Buy',
+                                            numberOfSharesToBuy])
+                    orderWriter.writerow([bollingerValues.index[holdUntil].year,
+                                            bollingerValues.index[holdUntil].month,
+                                            bollingerValues.index[holdUntil].day,
+                                            symbol, 
+                                            'Sell', 
+                                            numberOfSharesToBuy])
+
 
 def GenerateEventBasedTradingOrders(ls_symbols,
                                     startDate,
@@ -98,7 +145,6 @@ def GenerateEventBasedTradingOrders(ls_symbols,
     ls_keys = ['actual_close']
     ldf_data = dataobj.get_data(ldt_timestamps, ls_symbols, ls_keys)
     d_data = dict(zip(ls_keys, ldf_data))
-
     for s_key in ls_keys:
         d_data[s_key] = d_data[s_key].fillna(method='ffill')
         d_data[s_key] = d_data[s_key].fillna(method='bfill')
