@@ -88,21 +88,6 @@ def GenerateBollingerEventsBasedOrders(ls_symbols,
                                     numberOfSharesToBuy,
                                     numberOfDaysToHold,
                                     orderFile): 
-    ldt_timestamps = du.getNYSEdays(startDate, endDate, dt.timedelta(hours=16))
-    dataobj = da.DataAccess('Yahoo')
-    ls_keys = ['actual_close']
-    ldf_data = dataobj.get_data(ldt_timestamps, ls_symbols, ls_keys)
-    d_data = dict(zip(ls_keys, ldf_data))
-
-    for s_key in ls_keys:
-        d_data[s_key] = d_data[s_key].fillna(method='ffill')
-        d_data[s_key] = d_data[s_key].fillna(method='bfill')
-        d_data[s_key] = d_data[s_key].fillna(1.0)
-
-    df_close = d_data['actual_close']
-    ts_market = df_close['SPY']
-
-    print "Finding Events"
     bollingerValuesOfSymbols = TechnicalIndicators.CalculateBollingerBands(ls_symbols,startDate,endDate,loopBackPeriod)
     df_events = copy.deepcopy(bollingerValuesOfSymbols)
     df_events = df_events * np.nan

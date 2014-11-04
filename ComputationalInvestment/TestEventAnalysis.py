@@ -101,12 +101,11 @@ class Test_EventAnalysis(unittest.TestCase):
         self.assertLess(totalReturn,  expectedUpperReturnBoundary)
 
     def test_BollingerEventBasedOrders(self):
+        #Reference values from http://wiki.quantsoftware.org/index.php?title=CompInvesti_Homework_7
         startDate = dt.datetime(2008, 1, 1)
         endDate = dt.datetime(2009, 12, 31)
         orderFile= 'BollingerEventBasedOrders.csv'
-        expectedLowerReturnBoundary=1.2
-        expectedUpperReturnBoundary=1.3
-        initialInvestment=100
+        initialInvestment=100000
         expectedSharpeRatioOfFund = 0.878184607953
         expectedSharpeRatioOfSPX = -0.119678949254
         expectedTotalReturnOfFund= 1.09201 
@@ -117,7 +116,6 @@ class Test_EventAnalysis(unittest.TestCase):
         averageDailyReturnOfSPX = -0.000169161547432
         dataobj = da.DataAccess('Yahoo')
         ls_symbols = dataobj.get_symbols_from_list('sp5002012')
-        #ls_symbols.append('SPY')
         EventAnalyzer.GenerateBollingerEventsBasedOrders(ls_symbols, 
                                         startDate, 
                                         endDate,
@@ -125,9 +123,12 @@ class Test_EventAnalysis(unittest.TestCase):
                                         100,
                                         5,
                                         orderFile)
-        portfolioValues = MarketSimulator.SimulateMarket(100,  orderFile,startDate,endDate)
+        portfolioValues = MarketSimulator.SimulateMarket(initialInvestment,  orderFile,startDate,endDate)
         portfolioStatistics = PortfolioOptimizer.calculatePortfolioStatistics(portfolioValues.tolist())
         sharpeRatio=portfolioStatistics[2]
-        self.assertEqual(expectedSharpeRatioOfFund,  sharpeRatio)
+        standardDeviation=portfolioStatistics[0]
+        #Compare only up to the first post-decimal, to ignore minor differenced caused by float implementation differences     
+        self.assertEqual(int(expectedSharpeRatioOfFund*10),  int(sharpeRatio*10))
+        self.assertEqual(int(expectedStandardDeviationOfFund*1000),  int( standardDeviation*1000))
 if __name__ == '__main__':
     unittest.main()
