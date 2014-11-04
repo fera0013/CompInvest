@@ -29,7 +29,7 @@ class Test_EventAnalysis(unittest.TestCase):
 
     def test_BollingerEventMatrixCreation(self):
         #Reference data fromhttp://wiki.quantsoftware.org/index.php?title=CompInvestI_Homework_2
-        expectedNumberOfEvents=278
+        expectedNumberOfEvents=295
         dt_start = dt.datetime(2008, 1, 1)
         dt_end = dt.datetime(2009, 12, 31)
         ldt_timestamps = du.getNYSEdays(dt_start, dt_end, dt.timedelta(hours=16))
@@ -47,7 +47,7 @@ class Test_EventAnalysis(unittest.TestCase):
         ep.eventprofiler(df_events, d_data, i_lookback=20, i_lookforward=20,
             s_filename='BollingerEventStudy.pdf', b_market_neutral=True, b_errorbars=True,
             s_market_sym='SPY')
-        self.assertGreater(numberOfEvents,expectedNumberOfEvents)
+        self.assertEqual(expectedNumberOfEvents,numberOfEvents)
 
     def test_EventBasedOrderGeneration(self):
         finalPortfolioValue = 54824
