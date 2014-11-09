@@ -3,6 +3,7 @@ import pandas
 import datetime
 import TechnicalIndicators
 from pandas.util.testing import assert_frame_equal
+import DataUtility
 
 class Test_TestBollingerBands(unittest.TestCase):
     def test_BollingerBandImplementation(self):
@@ -18,8 +19,10 @@ class Test_TestBollingerBands(unittest.TestCase):
         symbols=['AAPL','GOOG','IBM','MSFT']
         startDate=datetime.datetime(2010,1,1)
         endDate=datetime.datetime(2010,12,31)
+        data = DataUtility.ReadData(startDate,endDate,symbols,['close'])
+        data=data[0]['close']
         loopbackPeriod=20
-        calculatedBollingerValues = TechnicalIndicators.CalculateBollingerBands(symbols,startDate,endDate,loopbackPeriod)
+        calculatedBollingerValues = TechnicalIndicators.CalculateBollingerBands(data,loopbackPeriod)
         pandas.util.testing.assert_frame_equal(expectedBollingerValues,calculatedBollingerValues.tail(5),check_less_precise=True)
         questionOneDate  = datetime.datetime( 2010,5,21,16)
         questionTwoDate  = datetime.datetime( 2010,6,14,16)

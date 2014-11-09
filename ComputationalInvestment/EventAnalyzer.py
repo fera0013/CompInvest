@@ -67,13 +67,15 @@ def CreateEventMatrix(ls_symbols, d_data,eventThreshold):
 
     return [numberOfEvents,df_events]
 
-def FindBollingerEvents(ls_symbols,startDate,endDate,loopBackPeriod=20): 
-    bollingerValuesOfSymbols = TechnicalIndicators.CalculateBollingerBands(ls_symbols,startDate,endDate,loopBackPeriod)
+def FindBollingerEvents(data,
+                        referenceData,
+                        loopBackPeriod): 
+    bollingerValuesOfSymbols = TechnicalIndicators.CalculateBollingerBands(data,loopBackPeriod)
     df_events = copy.deepcopy(bollingerValuesOfSymbols)
     df_events = df_events * np.nan
-    bollingerValuesOfSpy = TechnicalIndicators.CalculateBollingerBands(["SPY"],startDate,endDate,loopBackPeriod)
+    bollingerValuesOfSpy = TechnicalIndicators.CalculateBollingerBands(referenceData,loopBackPeriod)
     numberOfEvents=0
-    for symbol in ls_symbols:
+    for symbol in data.columns:
         bollingerValues = bollingerValuesOfSymbols[symbol]
         for i in range(1, len( bollingerValues)): 
             if  bollingerValues.iloc[i]<=-2.0 and bollingerValues.iloc[i-1] >=-2.0 and  bollingerValuesOfSpy['SPY'].iloc[i]>=1.0:
@@ -81,24 +83,21 @@ def FindBollingerEvents(ls_symbols,startDate,endDate,loopBackPeriod=20):
                 numberOfEvents+=1
     return [numberOfEvents, df_events]
 
-def GenerateBollingerEventsBasedOrders(ls_symbols,
-                                    startDate,
-                                    endDate,
+def GenerateBollingerEventsBasedOrders(data,
+                                    referenceData,
                                     loopBackPeriod,
                                     numberOfSharesToBuy,
                                     numberOfDaysToHold,
                                     orderFile): 
-    bollingerValuesOfSymbols = TechnicalIndicators.CalculateBollingerBands(ls_symbols,startDate,endDate,loopBackPeriod)
-    df_events = copy.deepcopy(bollingerValuesOfSymbols)
-    df_events = df_events * np.nan
-    bollingerValuesOfSpy = TechnicalIndicators.CalculateBollingerBands(["SPY"],startDate,endDate,loopBackPeriod)
+    bollingerValuesOfSymbols = TechnicalIndicators.CalculateBollingerBands(data,loopBackPeriod)
+    bollingerValuesOfReferenceData = TechnicalIndicators.CalculateBollingerBands( referenceData,loopBackPeriod)
     numberOfEvents=0
     with open(orderFile, 'wb') as csvfile:
         orderWriter = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-        for symbol in ls_symbols:
+        for symbol in data.columns:
             bollingerValues = bollingerValuesOfSymbols[symbol]
             for i in range(1, len( bollingerValues)): 
-                if  bollingerValues.iloc[i]<=-2.0 and bollingerValues.iloc[i-1] >=-2.0 and  bollingerValuesOfSpy['SPY'].iloc[i]>=1.0:
+                if  bollingerValues.iloc[i]<=-2.0 and bollingerValues.iloc[i-1] >=-2.0 and  bollingerValuesOfReferenceData['SPY'].iloc[i]>=1.0:
                     holdUntil=(i+numberOfDaysToHold) if (i+numberOfDaysToHold)<len( bollingerValues) else len( bollingerValues)-1
                     orderWriter.writerow([bollingerValues.index[i].year,
                                             bollingerValues.index[i].month,

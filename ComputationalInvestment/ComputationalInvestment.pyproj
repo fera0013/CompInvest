@@ -21,6 +21,9 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DataUtility.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="PortfolioOptimizer.py" />
     <Compile Include="EventAnalyzer.py" />
     <Compile Include="MarketSimulator.py">

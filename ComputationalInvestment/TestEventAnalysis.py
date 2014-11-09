@@ -6,6 +6,7 @@ import PortfolioOptimizer
 import QSTK.qstkutil.qsdateutil as du
 import QSTK.qstkutil.DataAccess as da
 import QSTK.qstkstudy.EventProfiler as ep
+import DataUtility
 
 class Test_EventAnalysis(unittest.TestCase):
     def test_EventMatrixCreation(self):
@@ -37,17 +38,18 @@ class Test_EventAnalysis(unittest.TestCase):
         ls_symbols = dataobj.get_symbols_from_list('sp5002012')
         ls_symbols.append('SPY')
         ls_keys = ['open', 'high', 'low', 'close', 'volume', 'actual_close']
-        ldf_data = dataobj.get_data(ldt_timestamps, ls_symbols, ls_keys)
-        d_data = dict(zip(ls_keys, ldf_data))
-        for s_key in ls_keys:
-            d_data[s_key] = d_data[s_key].fillna(method='ffill')
-            d_data[s_key] = d_data[s_key].fillna(method='bfill')
-            d_data[s_key] = d_data[s_key].fillna(1.0)
-        [numberOfEvents,df_events] = EventAnalyzer.FindBollingerEvents(  ls_symbols,  dt_start,dt_end,loopBackPeriod=20)
-        ep.eventprofiler(df_events, d_data, i_lookback=20, i_lookforward=20,
-            s_filename='BollingerEventStudy.pdf', b_market_neutral=True, b_errorbars=True,
-            s_market_sym='SPY')
+        d_data = DataUtility.ReadData(dt_start,dt_end,ls_symbols, ls_keys)
+        data=d_data[0]['close']
+        referenceData = DataUtility.ReadData( dt_start,dt_end,['SPY'],['close'])
+        referenceData=referenceData[0]['close']
+        data = data.fillna(method='ffill')
+        data = data.fillna(method='bfill')
+        data = data.fillna(1.0)
+        [numberOfEvents,df_events] = EventAnalyzer.FindBollingerEvents(data,referenceData,loopBackPeriod=20)
         self.assertEqual(expectedNumberOfEvents,numberOfEvents)
+        #ep.eventprofiler(df_events,   d_data, i_lookback=20, i_lookforward=20,
+        #    s_filename='BollingerEventStudy.pdf', b_market_neutral=True, b_errorbars=True,
+        #    s_market_sym='SPY')
 
     def test_EventBasedOrderGeneration(self):
         finalPortfolioValue = 54824
@@ -116,13 +118,16 @@ class Test_EventAnalysis(unittest.TestCase):
         averageDailyReturnOfSPX = -0.000169161547432
         dataobj = da.DataAccess('Yahoo')
         ls_symbols = dataobj.get_symbols_from_list('sp5002012')
-        EventAnalyzer.GenerateBollingerEventsBasedOrders(ls_symbols, 
-                                        startDate, 
-                                        endDate,
-                                        20,
-                                        100,
-                                        5,
-                                        orderFile)
+        data = DataUtility.ReadData(startDate,endDate,ls_symbols,['close'])
+        referenceData = DataUtility.ReadData(startDate,endDate,['SPY'],['close'])
+        referenceData=referenceData[0]['close']
+        data=data[0]['close']
+        EventAnalyzer.GenerateBollingerEventsBasedOrders(data,
+                                                         referenceData, 
+                                                         20,
+                                                         100,
+                                                         5,
+                                                         orderFile)
         portfolioValues = MarketSimulator.SimulateMarket(initialInvestment,  orderFile,startDate,endDate)
         portfolioStatistics = PortfolioOptimizer.calculatePortfolioStatistics(portfolioValues.tolist())
         sharpeRatio=portfolioStatistics[2]
