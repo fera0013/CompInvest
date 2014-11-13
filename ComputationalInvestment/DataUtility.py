@@ -29,4 +29,4 @@ def ReadData(startDate, endDate, ls_symbols,ls_data=['open', 'high', 'low', 'clo
     ldf_data = c_dataobj.get_data(ldt_timestamps, ls_symbols, ls_data);
     d_data = dict(zip(ls_data, ldf_data));
 
-    return [d_data, startDate, endDate, dt_timeofday, ldt_timestamps];
+    return d_data

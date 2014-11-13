@@ -39,9 +39,9 @@ class Test_EventAnalysis(unittest.TestCase):
         ls_symbols.append('SPY')
         ls_keys = ['open', 'high', 'low', 'close', 'volume', 'actual_close']
         d_data = DataUtility.ReadData(dt_start,dt_end,ls_symbols, ls_keys)
-        data=d_data[0]['close']
+        data=d_data['close']
         referenceData = DataUtility.ReadData( dt_start,dt_end,['SPY'],['close'])
-        referenceData=referenceData[0]['close']
+        referenceData=referenceData['close']
         data = data.fillna(method='ffill')
         data = data.fillna(method='bfill')
         data = data.fillna(1.0)
@@ -120,8 +120,8 @@ class Test_EventAnalysis(unittest.TestCase):
         ls_symbols = dataobj.get_symbols_from_list('sp5002012')
         data = DataUtility.ReadData(startDate,endDate,ls_symbols,['close'])
         referenceData = DataUtility.ReadData(startDate,endDate,['SPY'],['close'])
-        referenceData=referenceData[0]['close']
-        data=data[0]['close']
+        referenceData=referenceData['close']
+        data=data['close']
         EventAnalyzer.GenerateBollingerEventsBasedOrders(data,
                                                          referenceData, 
                                                          20,

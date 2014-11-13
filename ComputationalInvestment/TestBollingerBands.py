@@ -20,7 +20,7 @@ class Test_TestBollingerBands(unittest.TestCase):
         startDate=datetime.datetime(2010,1,1)
         endDate=datetime.datetime(2010,12,31)
         data = DataUtility.ReadData(startDate,endDate,symbols,['close'])
-        data=data[0]['close']
+        data=data['close']
         loopbackPeriod=20
         calculatedBollingerValues = TechnicalIndicators.CalculateBollingerBands(data,loopbackPeriod)
         pandas.util.testing.assert_frame_equal(expectedBollingerValues,calculatedBollingerValues.tail(5),check_less_precise=True)
